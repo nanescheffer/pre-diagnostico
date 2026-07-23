@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico ECOS | Ariane Scheffer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:      #0D1B2A;
+    --navy-mid:  #1C2E42;
+    --navy-soft: #2A3F55;
+    --slate:     #3D5166;
+    --mist:      #8FA3B1;
+    --fog:       #C2CDD6;
+    --silver:    #E8EDF1;
+    --white:     #F4F7F9;
+    --gold:      #C9A84C;
+    --gold-light:#E2C97E;
+    --magenta-l: #B03070;
+    --serif: 'Playfair Display', Georgia, serif;
+    --sans:  'Lato', system-ui, sans-serif;
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.75;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  .quiz-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 4rem 2rem 6rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  .quiz-header { margin-bottom: 3rem; }
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+  .eyebrow-text {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .quiz-title {
+    font-family: var(--serif);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--white);
+    margin-bottom: 0.8rem;
+  }
+  .quiz-title em { color: var(--gold-light); font-style: italic; }
+  .quiz-sub {
+    font-size: 0.97rem;
+    font-weight: 300;
+    color: var(--mist);
+    line-height: 1.7;
+  }
+
+  /* PROGRESSO */
+  .progress-wrap { margin-bottom: 2.5rem; display: none; }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+  }
+  .progress-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mist);
+  }
+  .progress-count {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--gold);
+  }
+  .progress-track {
+    height: 2px;
+    background: var(--navy-soft);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: width 0.5s var(--ease);
+    width: 0%;
+  }
+
+  /* SCREENS */
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeUp 0.45s var(--ease); }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* INTRO BOX */
+  .intro-box {
+    border: 1px solid var(--navy-soft);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+  .intro-box-body {
+    padding: 1.4rem 1.6rem;
+    background: var(--navy-mid);
+    border-bottom: 1px solid var(--navy-soft);
+  }
+  .intro-box-body p {
+    font-size: 0.95rem;
+    color: var(--mist);
+    line-height: 1.7;
+  }
+  .intro-box-meta {
+    padding: 1rem 1.6rem;
+    background: var(--navy-mid);
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .intro-meta-item {
+    font-size: 0.82rem;
+    color: var(--slate);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .intro-meta-item span { color: var(--gold); font-size: 0.75rem; }
+
+  /* PERGUNTA */
+  .q-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.8rem;
+    color: var(--slate);
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+  .q-text {
+    font-family: var(--serif);
+    font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+    font-weight: 400;
+    line-height: 1.38;
+    color: var(--white);
+    margin-bottom: 2rem;
+  }
+  .q-dimensao {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin-bottom: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .q-dimensao::before {
+    content: '';
+    width: 16px; height: 1px;
+    background: var(--slate);
+  }
+
+  /* OPÇÕES */
+  .options { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 2rem; }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.1rem 1.4rem;
+    border: 1px solid var(--navy-soft);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+    background: var(--navy-mid);
+  }
+  .option:hover { border-color: rgba(201,168,76,0.5); background: var(--navy-soft); }
+  .option.selected { border-color: var(--gold); background: rgba(201,168,76,0.07); }
+  .option.selected .opt-dot { background: var(--gold); border-color: var(--gold); }
+  .option.selected .opt-dot::after { opacity: 1; }
+  .option.selected .opt-text { color: var(--white); }
+
+  .opt-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--slate);
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .opt-dot::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--navy);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .opt-text {
+    font-size: 0.97rem;
+    font-weight: 300;
+    color: var(--mist);
+    line-height: 1.55;
+    transition: color 0.2s;
+  }
+
+  /* BOTÃO */
+  .btn-next {
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.95rem 2.4rem;
+    border-radius: 2px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s var(--ease);
+    background: var(--gold);
+    color: var(--navy);
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  .btn-next.ativo {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .btn-next.ativo:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(201,168,76,0.25);
+  }
+
+  /* LOADING */
+  #screen-loading { text-align: center; padding: 5rem 0; }
+  .loading-ring {
+    width: 44px; height: 44px;
+    border: 2px solid var(--navy-soft);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.85s linear infinite;
+    margin: 0 auto 1.5rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-msg {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--mist);
+  }
+  .loading-msgs { display: none; }
+
+  /* RESULTADO */
+  #screen-result { }
+
+  .result-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+  .result-eyebrow::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--gold);
+  }
+  .result-eyebrow-text {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .result-titulo {
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 400;
+    line-height: 1.18;
+    color: var(--white);
+    margin-bottom: 1rem;
+  }
+  .result-titulo em { color: var(--gold-light); font-style: italic; }
+
+  .result-intro {
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--mist);
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--navy-soft);
+  }
+
+  /* DIMENSÕES */
+  .dimensoes-titulo {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.4rem;
+    display: block;
+  }
+
+  .dimensoes { display: flex; flex-direction: column; gap: 1.2rem; margin-bottom: 3rem; }
+
+  .dim-card {
+    background: var(--navy-mid);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--navy-soft);
+  }
+
+  .dim-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.4rem 0.8rem;
+  }
+
+  .dim-nome {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fog);
+  }
+
+  .dim-nivel {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.82rem;
+  }
+  .nivel-forte  { color: var(--gold); }
+  .nivel-medio  { color: var(--gold-light); }
+  .nivel-fraco  { color: var(--magenta-l); }
+
+  .dim-barra-bg {
+    height: 3px;
+    background: var(--navy-soft);
+    margin: 0 1.4rem;
+  }
+  .dim-barra-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s var(--ease);
+  }
+  .fill-forte  { background: var(--gold); }
+  .fill-medio  { background: var(--gold-light); }
+  .fill-fraco  { background: var(--magenta-l); }
+
+  .dim-body { padding: 1rem 1.4rem 1.4rem; }
+
+  .dim-diagnostico {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--mist);
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+  }
+
+  .dim-ecos {
+    font-size: 0.88rem;
+    font-weight: 400;
+    color: var(--fog);
+    line-height: 1.65;
+    padding: 0.8rem 1rem;
+    background: rgba(201,168,76,0.06);
+    border-left: 2px solid var(--gold);
+    border-radius: 0 2px 2px 0;
+  }
+  .dim-ecos strong {
+    font-weight: 700;
+    color: var(--gold);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  /* CTA FINAL */
+  .result-cta {
+    background: var(--navy-mid);
+    border: 1px solid var(--navy-soft);
+    border-top: 2px solid var(--gold);
+    border-radius: 4px;
+    padding: 2.2rem;
+    margin-top: 0.5rem;
+  }
+  .cta-titulo {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--white);
+    line-height: 1.4;
+    margin-bottom: 0.7rem;
+  }
+  .cta-sub {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--mist);
+    line-height: 1.7;
+    margin-bottom: 1.8rem;
+  }
+  .cta-btn {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.95rem 2.2rem;
+    border-radius: 2px;
+    text-decoration: none;
+    background: var(--gold);
+    color: var(--navy);
+    border: 2px solid var(--gold);
+    transition: all 0.25s var(--ease);
+    cursor: pointer;
+  }
+  .cta-btn:hover {
+    background: var(--gold-light);
+    border-color: var(--gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(201,168,76,0.25);
+  }
+  .cta-micro {
+    font-size: 0.78rem;
+    color: var(--slate);
+    margin-top: 1rem;
+    line-height: 1.55;
+  }
+
+  .quiz-footer {
+    margin-top: auto;
+    padding-top: 3rem;
+    font-size: 0.72rem;
+    color: var(--slate);
+    text-align: center;
+  }
+
+  @media (max-width: 480px) {
+    .quiz-wrap { padding: 2.5rem 1.2rem 4rem; }
+    .option { padding: 0.9rem 1rem; }
+    .result-cta { padding: 1.5rem; }
+    .dim-header { grid-template-columns: 1fr; gap: 0.3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="quiz-wrap">
+
+  <div class="quiz-header">
+    <div class="eyebrow"><span class="eyebrow-text">Diagnóstico ECOS</span></div>
+    <h1 class="quiz-title">Como está o seu<br>negócio criativo <em>agora?</em></h1>
+    <p class="quiz-sub">8 perguntas. Resultado na hora. Nenhum dado pedido antes de você ver o diagnóstico.</p>
+  </div>
+
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="progress-info">
+      <span class="progress-label">Progresso</span>
+      <span class="progress-count" id="progress-count">1 de 8</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro-box">
+      <div class="intro-box-body">
+        <p>Responda sobre como o seu negócio está hoje. Não onde você quer chegar; o que está acontecendo agora. O diagnóstico só é útil quando reflete a realidade.</p>
+      </div>
+      <div class="intro-box-meta">
+        <div class="intro-meta-item"><span>⏱</span> 3 minutos</div>
+        <div class="intro-meta-item"><span>✓</span> Resultado imediato</div>
+        <div class="intro-meta-item"><span>✓</span> Sem cadastro</div>
+      </div>
+    </div>
+    <button class="btn-next ativo" onclick="iniciar()">Começar o diagnóstico</button>
+  </div>
+
+  <!-- PERGUNTAS -->
+  <div class="screen" id="screen-questions">
+    <span class="q-dimensao" id="q-dim"></span>
+    <span class="q-num" id="q-num"></span>
+    <p class="q-text" id="q-text"></p>
+    <div class="options" id="q-options"></div>
+    <button class="btn-next" id="btn-next" onclick="avancar()">Continuar</button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="screen-loading">
+    <div class="loading-ring"></div>
+    <p class="loading-msg" id="loading-msg">Lendo suas respostas...</p>
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="screen" id="screen-result"></div>
+
+  <div class="quiz-footer">Diagnóstico ECOS · Ariane Scheffer</div>
+</div>
+
+<script>
+// ── PERGUNTAS ───────────────────────────────────────────────────────────────
+// Cada pergunta pertence a uma dimensão (D1 a D4).
+// Peso: 0 = ausente, 1 = frágil, 2 = médio, 3 = sólido
+
+const PERGUNTAS = [
+  // D1: VENDAS
+  {
+    dim: "D1",
+    dimNome: "Vendas e tração",
+    texto: "Você vende o seu trabalho com alguma regularidade?",
+    opcoes: [
+      { texto: "Sim; vendo todo mês, às vezes mais, às vezes menos.", peso: 3 },
+      { texto: "Vendo, mas de forma bem irregular. Passa meses sem nada.", peso: 2 },
+      { texto: "Raramente. Recebo interesse, mas poucas vendas se concretizam.", peso: 1 },
+      { texto: "Ainda não vendi. Estou construindo.", peso: 0 }
+    ]
+  },
+  {
+    dim: "D1",
+    dimNome: "Vendas e tração",
+    texto: "O que melhor descreve como os clientes chegam até você hoje?",
+    opcoes: [
+      { texto: "Pelo Instagram ou outra rede social que mantenho ativa.", peso: 3 },
+      { texto: "Principalmente por indicação de quem já me conhece.", peso: 2 },
+      { texto: "Chega de formas imprevisíveis; não tenho uma fonte clara.", peso: 1 },
+      { texto: "Ainda não estou recebendo clientes de forma consistente.", peso: 0 }
+    ]
+  },
+
+  // D2: COMUNICAÇÃO
+  {
+    dim: "D2",
+    dimNome: "Comunicação e posicionamento",
+    texto: "Você consegue explicar com clareza o que vende e para quem?",
+    opcoes: [
+      { texto: "Sim; consigo descrever meu trabalho e meu cliente com facilidade.", peso: 3 },
+      { texto: "Mais ou menos. Depende de quem está perguntando.", peso: 2 },
+      { texto: "Sei o que faço, mas tenho dificuldade de comunicar.", peso: 1 },
+      { texto: "Ainda estou definindo isso.", peso: 0 }
+    ]
+  },
+  {
+    dim: "D2",
+    dimNome: "Comunicação e posicionamento",
+    texto: "Com que frequência você publica sobre o seu trabalho?",
+    opcoes: [
+      { texto: "Pelo menos uma vez por semana; com consistência.", peso: 3 },
+      { texto: "Às vezes. Quando tenho energia ou algo novo para mostrar.", peso: 2 },
+      { texto: "Raramente. Fico travada e acabo não publicando.", peso: 1 },
+      { texto: "Quase nunca. Não sei o que publicar.", peso: 0 }
+    ]
+  },
+
+  // D3: ATENDIMENTO E PROCESSO
+  {
+    dim: "D3",
+    dimNome: "Atendimento e processo",
+    texto: "Quando alguém entra em contato para comprar, como você conduz esse atendimento?",
+    opcoes: [
+      { texto: "Tenho um fluxo definido: respondo, envio informações, fecho.", peso: 3 },
+      { texto: "Improviso caso a caso. Cada atendimento é diferente.", peso: 2 },
+      { texto: "Fico insegura e muitas vezes o contato esfria antes de fechar.", peso: 1 },
+      { texto: "Ainda não costumo receber contatos de compra.", peso: 0 }
+    ]
+  },
+  {
+    dim: "D3",
+    dimNome: "Atendimento e processo",
+    texto: "Você tem algum registro dos seus clientes fora das redes sociais?",
+    opcoes: [
+      { texto: "Sim; tenho lista de e-mails, planilha ou CRM com contatos.", peso: 3 },
+      { texto: "Tenho algumas informações salvas, mas nada organizado.", peso: 2 },
+      { texto: "Os contatos ficam no WhatsApp ou no direct. Nada além disso.", peso: 1 },
+      { texto: "Não tenho registro nenhum além das redes.", peso: 0 }
+    ]
+  },
+
+  // D4: GESTÃO E ROTINA
+  {
+    dim: "D4",
+    dimNome: "Gestão e rotina",
+    texto: "Como você se sente em relação à gestão do seu negócio hoje?",
+    opcoes: [
+      { texto: "Consigo acompanhar. Tenho noção do que entra, do que sai e do que preciso fazer.", peso: 3 },
+      { texto: "Funciona, mas no improviso. Às vezes perco o controle.", peso: 2 },
+      { texto: "Está caótico. Vivo apagando incêndio e não sobra tempo para pensar.", peso: 1 },
+      { texto: "Não tenho gestão. Faço o que aparece.", peso: 0 }
+    ]
+  },
+  {
+    dim: "D4",
+    dimNome: "Gestão e rotina",
+    texto: "Se você recebesse um plano de ação claro hoje, teria margem para implementar?",
+    opcoes: [
+      { texto: "Sim; consigo organizar minha rotina para isso.", peso: 3 },
+      { texto: "Provavelmente sim, mas precisaria reorganizar algumas coisas.", peso: 2 },
+      { texto: "Teria dificuldade. Minha rotina está bem sobrecarregada.", peso: 1 },
+      { texto: "No momento não. Não tenho energia nem tempo disponível.", peso: 0 }
+    ]
+  }
+];
+
+// ── ESTADO ──────────────────────────────────────────────────────────────────
+let atual = 0;
+let respostas = [];
+let scoresPorDim = { D1: [], D2: [], D3: [], D4: [] };
+
+// ── FLOW ────────────────────────────────────────────────────────────────────
+function iniciar() {
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-questions').classList.add('active');
+  document.getElementById('progress-wrap').style.display = 'block';
+  renderPergunta();
+}
+
+function renderPergunta() {
+  const p = PERGUNTAS[atual];
+  const total = PERGUNTAS.length;
+
+  document.getElementById('q-dim').textContent = p.dimNome;
+  document.getElementById('q-num').textContent = `Pergunta ${atual + 1} de ${total}`;
+  document.getElementById('q-text').textContent = p.texto;
+  document.getElementById('progress-count').textContent = `${atual + 1} de ${total}`;
+  document.getElementById('progress-fill').style.width = `${(atual / total) * 100}%`;
+
+  const btn = document.getElementById('btn-next');
+  btn.classList.remove('ativo');
+  btn.textContent = atual < total - 1 ? 'Continuar' : 'Ver meu diagnóstico';
+
+  const container = document.getElementById('q-options');
+  container.innerHTML = '';
+  p.opcoes.forEach((op, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = `<span class="opt-dot"></span><span class="opt-text">${op.texto}</span>`;
+    div.addEventListener('click', () => selecionar(div, i));
+    container.appendChild(div);
+  });
+}
+
+function selecionar(el, idx) {
+  document.querySelectorAll('#q-options .option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  respostas[atual] = idx;
+  document.getElementById('btn-next').classList.add('ativo');
+}
+
+function avancar() {
+  const p = PERGUNTAS[atual];
+  const peso = p.opcoes[respostas[atual]].peso;
+  scoresPorDim[p.dim].push(peso);
+
+  if (atual < PERGUNTAS.length - 1) {
+    atual++;
+    renderPergunta();
+  } else {
+    mostrarLoading();
+  }
+}
+
+// ── LOADING ──────────────────────────────────────────────────────────────────
+const mensagensLoading = [
+  'Lendo suas respostas...',
+  'Mapeando os pontos de atenção...',
+  'Montando seu diagnóstico...'
+];
+function mostrarLoading() {
+  document.getElementById('screen-questions').classList.remove('active');
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('screen-loading').classList.add('active');
+
+  let i = 0;
+  const el = document.getElementById('loading-msg');
+  const intervalo = setInterval(() => {
+    i++;
+    if (i < mensagensLoading.length) el.textContent = mensagensLoading[i];
+    else clearInterval(intervalo);
+  }, 750);
+
+  setTimeout(mostrarResultado, 2400);
+}
+
+// ── CÁLCULO ──────────────────────────────────────────────────────────────────
+function calcNivel(dim) {
+  const arr = scoresPorDim[dim];
+  const max = arr.length * 3;
+  const soma = arr.reduce((a, b) => a + b, 0);
+  const ratio = max > 0 ? soma / max : 0;
+  if (ratio >= 0.7) return 'forte';
+  if (ratio >= 0.4) return 'medio';
+  return 'fraco';
+}
+
+function calcPct(dim) {
+  const arr = scoresPorDim[dim];
+  const max = arr.length * 3;
+  const soma = arr.reduce((a, b) => a + b, 0);
+  return max > 0 ? Math.round((soma / max) * 100) : 0;
+}
+
+// ── CONTEÚDO DAS DIMENSÕES ────────────────────────────────────────────────────
+const DIMS = [
+  {
+    id: 'D1',
+    nome: 'Vendas e tração',
+    textos: {
+      forte: {
+        diagnostico: 'Você já tem compradores e sabe atrair interesse. A venda acontece.',
+        ecos: 'Com tração estabelecida, a ECOS trabalha a consistência: transforma vendas episódicas num fluxo previsível, sem depender de sorte ou momento de inspiração.'
+      },
+      medio: {
+        diagnostico: 'Você vende, mas ainda de forma irregular. A demanda existe; o sistema de captação ainda não.',
+        ecos: 'A ECOS mapeia de onde vêm suas melhores vendas e estrutura um caminho para replicar isso; sem depender de indicação nem de um mês de sorte.'
+      },
+      fraco: {
+        diagnostico: 'As vendas ainda são raras ou inexistentes. Esse é o ponto que mais precisa de atenção antes de qualquer outra estrutura.',
+        ecos: 'A ECOS começa pelo diagnóstico de posicionamento e oferta; entender o que está impedindo as primeiras vendas consistentes é o ponto de partida.'
+      }
+    }
+  },
+  {
+    id: 'D2',
+    nome: 'Comunicação e posicionamento',
+    textos: {
+      forte: {
+        diagnostico: 'Você sabe o que vende, para quem vende e consegue comunicar isso com consistência.',
+        ecos: 'Com posicionamento claro, a ECOS trabalha a amplificação: como tornar essa mensagem mais eficiente em cada ponto de contato com o cliente.'
+      },
+      medio: {
+        diagnostico: 'Você tem clareza sobre o trabalho, mas a comunicação ainda é irregular. Às vezes acerta o tom; às vezes publica por obrigação.',
+        ecos: 'A ECOS define com você uma linha de comunicação que reflita o seu trabalho; e que você consiga sustentar sem precisar se reinventar toda semana.'
+      },
+      fraco: {
+        diagnostico: 'A comunicação ainda não está refletindo o valor do seu trabalho. Isso pode estar custando vendas que você nem sabe que perdeu.',
+        ecos: 'Posicionamento é o primeiro ponto do diagnóstico ECOS. Antes de qualquer estratégia de captação, a mensagem precisa estar afiada.'
+      }
+    }
+  },
+  {
+    id: 'D3',
+    nome: 'Atendimento e processo',
+    textos: {
+      forte: {
+        diagnostico: 'Você tem um fluxo de atendimento definido e mantém contato com quem já comprou. Isso é raro.',
+        ecos: 'Com processo de atendimento rodando, a ECOS foca em otimizar: o que pode ser automatizado, o que pode ser melhorado para aumentar a taxa de fechamento.'
+      },
+      medio: {
+        diagnostico: 'Você atende, mas improvisa. Cada contato é tratado de forma diferente; e isso custa energia e vendas.',
+        ecos: 'A ECOS entrega scripts de atendimento e um fluxo de contato padronizado; para que você feche mais sem precisar começar do zero em cada conversa.'
+      },
+      fraco: {
+        diagnostico: 'O atendimento ainda é inconsistente e você não tem registros dos seus clientes fora das redes. Se o Instagram cair hoje, você perde o contato com todos.',
+        ecos: 'Estruturar atendimento e começar uma lista própria de contatos está entre as primeiras entregas da ECOS; porque nenhuma estratégia de crescimento funciona sem essa base.'
+      }
+    }
+  },
+  {
+    id: 'D4',
+    nome: 'Gestão e rotina',
+    textos: {
+      forte: {
+        diagnostico: 'Você tem controle da sua rotina e consegue se organizar para implementar o que precisa.',
+        ecos: 'Com margem de implementação, a ECOS consegue trabalhar em profundidade. O plano de 90 dias vai ter tração real.'
+      },
+      medio: {
+        diagnostico: 'A gestão funciona no improviso. Você dá conta, mas está sempre no limite.',
+        ecos: 'A ECOS inclui uma análise de rotina para identificar o que está consumindo energia sem retorno; e onde estão as margens para implementar mudanças sem sobrecarga.'
+      },
+      fraco: {
+        diagnostico: 'A rotina está sobrecarregada e há pouca margem para implementar mudanças. Esse ponto precisa de atenção antes de qualquer estratégia nova.',
+        ecos: 'A ECOS trabalha com planos de ação em blocos pequenos, exatamente para quem não tem margem para tudo de uma vez. O diagnóstico começa por aqui.'
+      }
+    }
+  }
+];
+
+// ── RESULTADO ────────────────────────────────────────────────────────────────
+function mostrarResultado() {
+  document.getElementById('screen-loading').classList.remove('active');
+  const el = document.getElementById('screen-result');
+  el.classList.add('active');
+
+  const niveis = {};
+  DIMS.forEach(d => { niveis[d.id] = calcNivel(d.id); });
+  const pcts  = {};
+  DIMS.forEach(d => { pcts[d.id] = calcPct(d.id); });
+
+  const niveisLabels = { forte: 'Sólido', medio: 'Em desenvolvimento', fraco: 'Precisa de atenção' };
+  const fillClass    = { forte: 'fill-forte', medio: 'fill-medio', fraco: 'fill-fraco' };
+  const nivelClass   = { forte: 'nivel-forte', medio: 'nivel-medio', fraco: 'nivel-fraco' };
+
+  const totalPct = Math.round(
+    DIMS.reduce((s, d) => s + pcts[d.id], 0) / DIMS.length
+  );
+
+  let tituloFrase, introFrase;
+  if (totalPct >= 65) {
+    tituloFrase = 'Seu negócio tem <em>base sólida.</em><br>Mas há pontos a organizar.';
+    introFrase = 'Você já construiu algo real. As vendas acontecem, a presença existe. O que aparece abaixo são os pontos onde a estrutura ainda depende de você segurando tudo na mão.';
+  } else if (totalPct >= 35) {
+    tituloFrase = 'Seu negócio está em <em>movimento.</em><br>Mas o improviso ainda pesa.';
+    introFrase = 'Você está construindo. Algumas áreas já têm base; outras ainda funcionam no susto. O diagnóstico abaixo mostra onde a energia está sendo gasta sem retorno proporcional.';
+  } else {
+    tituloFrase = 'Seu negócio está <em>começando.</em><br>Há muito a construir.';
+    introFrase = 'Você está no começo de um processo que leva tempo. O diagnóstico abaixo mostra o que existe hoje e o que precisa de atenção primeiro; sem pular etapas.';
+  }
+
+  const dimsHTML = DIMS.map(d => {
+    const nivel = niveis[d.id];
+    const pct   = pcts[d.id];
+    const conteudo = d.textos[nivel];
+    return `
+      <div class="dim-card">
+        <div class="dim-header">
+          <span class="dim-nome">${d.nome}</span>
+          <span class="dim-nivel ${nivelClass[nivel]}">${niveisLabels[nivel]}</span>
+        </div>
+        <div class="dim-barra-bg">
+          <div class="dim-barra-fill ${fillClass[nivel]}" style="width:0%" data-width="${pct}%"></div>
+        </div>
+        <div class="dim-body">
+          <p class="dim-diagnostico">${conteudo.diagnostico}</p>
+          <div class="dim-ecos">
+            <strong>Como a ECOS atua aqui</strong>
+            ${conteudo.ecos}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="result-eyebrow"><span class="result-eyebrow-text">Diagnóstico concluído</span></div>
+    <h2 class="result-titulo">${tituloFrase}</h2>
+    <p class="result-intro">${introFrase}</p>
+    <span class="dimensoes-titulo">As 4 dimensões do seu negócio</span>
+    <div class="dimensoes">${dimsHTML}</div>
+    <div class="result-cta">
+      <p class="cta-titulo">Quer conversar sobre o que o diagnóstico revelou?</p>
+      <p class="cta-sub">Preencha o formulário de pré-diagnóstico. Leva 10 minutos e me dá o contexto que preciso para entender o seu momento. Analiso e entro em contato pelo WhatsApp.</p>
+      <a href="https://tally.so/r/gDGEZl" target="_blank" class="cta-btn">Quero conversar sobre a ECOS</a>
+      <p class="cta-micro">Não é um compromisso de compra. É o começo de uma conversa.</p>
+    </div>`;
+
+  // Anima as barras depois do render
+  setTimeout(() => {
+    document.querySelectorAll('.dim-barra-fill').forEach(el => {
+      el.style.width = el.dataset.width;
+    });
+  }, 150);
+}
+</script>
+</body>
+</html>
