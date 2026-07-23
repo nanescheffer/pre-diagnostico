@@ -723,17 +723,32 @@ function mostrarResultado() {
     DIMS.reduce((s, d) => s + pcts[d.id], 0) / DIMS.length
   );
 
-  let tituloFrase, introFrase;
+  let tituloFrase, introFrase, diagnosticoGeral;
   if (totalPct >= 65) {
     tituloFrase = 'Seu negócio tem boa base, mas precisa de processos para fluir sem sobrecarregar você.';
     introFrase = 'Você já tem uma entrega consolidada. O diagnóstico abaixo mostra os pontos em que a estrutura ainda depende demais do seu esforço individual para funcionar.';
+    diagnosticoGeral = 'Base Sólida';
   } else if (totalPct >= 35) {
     tituloFrase = 'Seu negócio está rodando, mas o improviso no dia a dia consome sua energia.';
     introFrase = 'Você tem um bom trabalho, mas algumas etapas funcionam no susto. O mapa abaixo indica onde a sua energia está sendo gasta sem o retorno proporcional.';
+    diagnosticoGeral = 'Em Movimento / Improviso';
   } else {
     tituloFrase = 'Seu negócio está na fase de construir as primeiras estruturas.';
     introFrase = 'Você está pavimentando o seu caminho. O diagnóstico mostra a sua realidade hoje e aponta por onde devemos começar, sem pular etapas.';
+    diagnosticoGeral = 'Estruturação Inicial';
   }
+
+  // Monta a URL do Tally injetando os parâmetros do diagnóstico
+  const tallyBaseUrl = "https://tally.so/r/gDGEZl";
+  const tallyParams = new URLSearchParams({
+    diagnostico_geral: diagnosticoGeral,
+    vendas: niveisLabels[niveis['D1']],
+    comunicacao: niveisLabels[niveis['D2']],
+    atendimento: niveisLabels[niveis['D3']],
+    gestao: niveisLabels[niveis['D4']]
+  }).toString();
+
+  const finalTallyUrl = `${tallyBaseUrl}?${tallyParams}`;
 
   const dimsHTML = DIMS.map(d => {
     const nivel = niveis[d.id];
@@ -760,10 +775,10 @@ function mostrarResultado() {
     <p class="result-intro">${introFrase}</p>
     <div class="dimensoes">${dimsHTML}</div>
     <div class="result-cta">
-      <p class="cta-titulo">Quer entender como resolver esses pontos na prática?</p>
-      <p class="cta-sub">A consultoria ECOS é uma sessão de 2 horas onde analisamos gargalos como esses e saímos com um plano de ação tático para o seu momento. Clique no botão abaixo para preencher mais algumas informações sobre o seu negócio e ver se a ECOS faz sentido para você agora.</p>
-      <a href="https://tally.so/r/gDGEZl" target="_blank" class="cta-btn">Quero conversar com a Ariane</a>
-      <p class="cta-micro">Leva 2 minutos. Eu analiso suas respostas e chamo você no WhatsApp.</p>
+      <p class="cta-titulo">Quer receber esse diagnóstico por e-mail e conversar sobre o seu momento?</p>
+      <p class="cta-sub">A consultoria ECOS é uma sessão de 2 horas onde analisamos gargalos como esses e saímos com um plano de ação tático. Preencha os dados no botão abaixo para receber o resumo no seu e-mail e ver se a ECOS faz sentido para o seu momento.</p>
+      <a href="${finalTallyUrl}" target="_blank" class="cta-btn">Receber diagnóstico por e-mail</a>
+      <p class="cta-micro">Leva 2 minutos. Envio a cópia do diagnóstico e chamo você no WhatsApp.</p>
     </div>`;
 }
 </script>
