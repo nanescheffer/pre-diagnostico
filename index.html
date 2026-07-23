@@ -62,7 +62,7 @@
     font-family: var(--serif);
     font-size: clamp(2.2rem, 5vw, 3.2rem);
     font-weight: 400;
-    line-height: 1.1;
+    line-height: 1.15;
     color: var(--text);
     margin-bottom: 1rem;
     letter-spacing: -0.01em;
@@ -398,13 +398,13 @@
 
   <div class="quiz-header">
     <span class="eyebrow-text">Diagnóstico ECOS</span>
-    <h1 class="quiz-title">Mapeamento de estrutura para negócios criativos</h1>
-    <p class="quiz-sub">8 perguntas objetivas. Leitura imediata do momento do seu negócio.</p>
+    <h1 class="quiz-title">Como está a estrutura do seu negócio criativo hoje?</h1>
+    <p class="quiz-sub">8 perguntas rápidas para entender o que está funcionando e onde o processo está travando.</p>
   </div>
 
   <div class="progress-wrap" id="progress-wrap">
     <div class="progress-info">
-      <span class="progress-label">Fase de Análise</span>
+      <span class="progress-label">Etapa</span>
       <span class="progress-count" id="progress-count">01 / 08</span>
     </div>
     <div class="progress-track">
@@ -415,14 +415,14 @@
   <!-- INTRO -->
   <div class="screen active" id="screen-intro">
     <div class="intro-box">
-      <p>Responda com base no cenário operacional de hoje. Para que o mapeamento seja preciso, selecione as opções que melhor descrevem a realidade atual da sua empresa, não o cenário ideal.</p>
+      <p>Responda sobre o momento atual da sua empresa. Não pense no cenário ideal ou no que você quer construir lá na frente, mas no que está acontecendo agora na sua rotina.</p>
       <div class="intro-meta">
-        <div class="intro-meta-item">Tempo estimado: 3 min</div>
-        <div class="intro-meta-item">Análise instantânea</div>
+        <div class="intro-meta-item">Duração: 3 minutos</div>
+        <div class="intro-meta-item">Leitura imediata</div>
         <div class="intro-meta-item">Sem cadastro prévio</div>
       </div>
     </div>
-    <button class="btn-next ativo" onclick="iniciar()">Iniciar Mapeamento</button>
+    <button class="btn-next ativo" onclick="iniciar()">Iniciar Diagnóstico</button>
   </div>
 
   <!-- PERGUNTAS -->
@@ -430,109 +430,109 @@
     <span class="q-dimensao" id="q-dim"></span>
     <p class="q-text" id="q-text"></p>
     <div class="options" id="q-options"></div>
-    <button class="btn-next" id="btn-next" onclick="avancar()">Avançar</button>
+    <button class="btn-next" id="btn-next" onclick="avancar()">Continuar</button>
   </div>
 
   <!-- LOADING -->
   <div class="screen" id="screen-loading">
     <div class="loading-bar"></div>
-    <p class="loading-msg" id="loading-msg">Sintetizando respostas...</p>
+    <p class="loading-msg" id="loading-msg">Analisando suas respostas...</p>
   </div>
 
   <!-- RESULTADO -->
   <div class="screen" id="screen-result"></div>
 
-  <div class="quiz-footer">ECOS · Consultoria de Estratégia por Ariane Scheffer</div>
+  <div class="quiz-footer">Diagnóstico ECOS · Ariane Scheffer</div>
 </div>
 
 <script>
 const PERGUNTAS = [
   {
     dim: "D1",
-    dimNome: "01. Vendas & Tração",
-    texto: "Como se comporta a regularidade das suas vendas atualmente?",
+    dimNome: "01. Vendas e movimento",
+    texto: "Com que frequência as vendas acontecem no seu negócio hoje?",
     opcoes: [
-      { texto: "Faturamento mensal recorrente com variação previsível.", peso: 3 },
-      { texto: "Vendas irregulares. Alternância entre meses de pico e meses sem receita.", peso: 2 },
-      { texto: "Volume pontual. Ocorrem conversões esporádicas após grande esforço.", peso: 1 },
-      { texto: "Sem estrutura comercial ativa no momento.", peso: 0 }
+      { texto: "Tenho clientes entrando todos os meses com boa regularidade.", peso: 3 },
+      { texto: "Vendo, mas é instável: passo meses bons e depois longos períodos sem nada.", peso: 2 },
+      { texto: "Entram contatos, mas pouca gente realmente fecha contrato.", peso: 1 },
+      { texto: "Ainda não tenho um fluxo de vendas acontecendo.", peso: 0 }
     ]
   },
   {
     dim: "D1",
-    dimNome: "01. Vendas & Tração",
-    texto: "Qual o principal canal de aquisição de clientes hoje?",
+    dimNome: "01. Vendas e movimento",
+    texto: "De onde vêm as pessoas que chegam interessadas no seu trabalho?",
     opcoes: [
-      { texto: "Presença digital estruturada (redes sociais/mídia paga).", peso: 3 },
-      { texto: "Indicação direta de clientes anteriores ou rede de contatos.", peso: 2 },
-      { texto: "Entradas dispersas sem um canal predominante ou identificável.", peso: 1 },
-      { texto: "Ainda não há fluxo contínuo de novos contatos.", peso: 0 }
+      { texto: "Das minhas redes sociais ou canais que mantenho sempre ativos.", peso: 3 },
+      { texto: "Principalmente por indicação de quem já me conhece ou comprou de mim.", peso: 2 },
+      { texto: "É imprevisível. Não sei bem de onde os clientes surgem.", peso: 1 },
+      { texto: "Ainda não estou recebendo contatos com frequência.", peso: 0 }
     ]
   },
   {
     dim: "D2",
-    dimNome: "02. Comunicação & Posicionamento",
-    texto: "O posicionamento do negócio é compreendido de forma imediata pelo mercado?",
+    dimNome: "02. Comunicação e clareza",
+    texto: "Você sente facilidade para explicar o que vende e para quem vende?",
     opcoes: [
-      { texto: "Sim. A proposta de valor e o público-alvo são claros e definidos.", peso: 3 },
-      { texto: "Parcialmente. Exige explicação detalhada para demonstrar o valor real.", peso: 2 },
-      { texto: "Dificuldade em traduzir a entrega técnica em argumentos comerciais.", peso: 1 },
-      { texto: "Posicionamento em fase de reformulação.", peso: 0 }
+      { texto: "Sim, consigo explicar com clareza a minha proposta e o meu valor.", peso: 3 },
+      { texto: "Mais ou menos. Sei o que faço, mas às vezes me enrolo para explicar.", peso: 2 },
+      { texto: "Tenho dificuldade de transformar minha entrega técnica em algo que o cliente entenda de primeira.", peso: 1 },
+      { texto: "Ainda estou tentando entender como me posicionar.", peso: 0 }
     ]
   },
   {
     dim: "D2",
-    dimNome: "02. Comunicação & Posicionamento",
-    texto: "Qual a frequência de sustentação da sua narrativa comercial?",
+    dimNome: "02. Comunicação e clareza",
+    texto: "Como é a sua rotina de publicação e conteúdo sobre o seu trabalho?",
     opcoes: [
-      { texto: "Consistente. Linha editorial ativa e alinhada ao objetivo comercial.", peso: 3 },
-      { texto: "Inconstante. Publicações pontuais dependentes de disponibilidade de tempo.", peso: 2 },
-      { texto: "Baixa frequência por incerteza sobre o tipo de conteúdo adequado.", peso: 1 },
-      { texto: "Sem comunicação comercial ativa.", peso: 0 }
+      { texto: "Tenho consistência e público com clareza toda semana.", peso: 3 },
+      { texto: "Publico quando sobra tempo ou quando bate a inspiração.", peso: 2 },
+      { texto: "Fico travada sem saber o que postar e acabo sumindo das redes.", peso: 1 },
+      { texto: "Quase não publico nada sobre meu trabalho comercialmente.", peso: 0 }
     ]
   },
   {
     dim: "D3",
-    dimNome: "03. Atendimento & Processos",
-    texto: "Como é conduzida a jornada do potencial cliente após o primeiro contato?",
+    dimNome: "03. Atendimento e fluxo",
+    texto: "Quando um potencial cliente te chama, como você conduz a conversa?",
     opcoes: [
-      { texto: "Fluxo padronizado: qualificação, proposta clara e acompanhamento.", peso: 3 },
-      { texto: "Atendimento personalizado e improvisado a cada nova solicitação.", peso: 2 },
-      { texto: "Processo informal, com perda frequente de tempo na negociação.", peso: 1 },
-      { texto: "Sem protocolo definido para recebimento de demandas.", peso: 0 }
+      { texto: "Tenho um fluxo claro: entendo a demanda, apresento a proposta e faço o acompanhamento.", peso: 3 },
+      { texto: "Improviso caso a caso. Cada atendimento acontece de um jeito diferente.", peso: 2 },
+      { texto: "Sinto insegurança na hora de passar orçamento e a conversa costuma esfriar.", peso: 1 },
+      { texto: "Ainda recebo poucos ou nenhum contato direto para orçamentos.", peso: 0 }
     ]
   },
   {
     dim: "D3",
-    dimNome: "03. Atendimento & Processos",
-    texto: "Como é gerida a base de dados de clientes da empresa?",
+    dimNome: "03. Atendimento e fluxo",
+    texto: "Onde ficam guardadas as informações dos seus clientes e contatos?",
     opcoes: [
-      { texto: "Estruturada em ferramenta de gestão (CRM, planilhas organizadas ou e-mail).", peso: 3 },
-      { texto: "Histórico disperso entre anotações e mensagens.", peso: 2 },
-      { texto: "Centralizada apenas no histórico do WhatsApp ou rede social.", peso: 1 },
-      { texto: "Sem retenção de dados ou histórico comercial.", peso: 0 }
+      { texto: "Em uma planilha, CRM ou lista própria e organizada.", peso: 3 },
+      { texto: "Tenho algumas coisas salvas, mas bem espalhadas e sem padrão.", peso: 2 },
+      { texto: "Tudo fica retido no WhatsApp ou nas conversas de direct.", peso: 1 },
+      { texto: "Não tenho registro nenhum além do contato direto na rede social.", peso: 0 }
     ]
   },
   {
     dim: "D4",
-    dimNome: "04. Gestão & Operação",
-    texto: "Qual a clareza sobre os indicadores operacionais e financeiros da empresa?",
+    dimNome: "04. Gestão e rotina",
+    texto: "Como você avalia a organização do seu tempo e da sua empresa hoje?",
     opcoes: [
-      { texto: "Acompanhamento regular de margem, receita e capacidade de entrega.", peso: 3 },
-      { texto: "Controle financeiro básico, sem previsibilidade operacional.", peso: 2 },
-      { texto: "Gestão reativa, focada na resolução de demandas imediatas.", peso: 1 },
-      { texto: "Ausência de processos de gestão formalizados.", peso: 0 }
+      { texto: "Tenho clareza dos processos, do que entra de caixa e da minha rotina.", peso: 3 },
+      { texto: "A empresa funciona, mas vivo no improviso e apagando incêndios.", peso: 2 },
+      { texto: "Sinto sobrecarga constante e falta tempo para pensar no crescimento.", peso: 1 },
+      { texto: "Não tenho gestão estruturada. Faço o que dá no dia a dia.", peso: 0 }
     ]
   },
   {
     dim: "D4",
-    dimNome: "04. Gestão & Operação",
-    texto: "Existe capacidade de execução para aplicar novas estratégias nos próximos 90 dias?",
+    dimNome: "04. Gestão e rotina",
+    texto: "Se você tivesse um plano de ação estratégico hoje, conseguiria colocar em prática?",
     opcoes: [
-      { texto: "Rotina organizada com espaço para implementação de novos processos.", peso: 3 },
-      { texto: "Necessidade de ajuste na agenda, mas com viabilidade de execução.", peso: 2 },
-      { texto: "Operação sobrecarregada, com baixa disponibilidade imediata.", peso: 1 },
-      { texto: "Sem margem de tempo ou equipe para novas implementações.", peso: 0 }
+      { texto: "Sim, consigo me organizar bem para aplicar as mudanças necessárias.", peso: 3 },
+      { texto: "Consigo, mas precisarei reorganizar algumas prioridades na agenda.", peso: 2 },
+      { texto: "Teria dificuldade, pois minha rotina atual já está bastante sobrecarregada.", peso: 1 },
+      { texto: "No momento não tenho tempo nem energia disponíveis.", peso: 0 }
     ]
   }
 ];
@@ -559,7 +559,7 @@ function renderPergunta() {
 
   const btn = document.getElementById('btn-next');
   btn.classList.remove('ativo');
-  btn.textContent = atual < total - 1 ? 'Avançar' : 'Gerar Análise';
+  btn.textContent = atual < total - 1 ? 'Continuar' : 'Ver meu diagnóstico';
 
   const container = document.getElementById('q-options');
   container.innerHTML = '';
@@ -593,9 +593,9 @@ function avancar() {
 }
 
 const mensagensLoading = [
-  'Sintetizando respostas...',
-  'Avaliando indicadores operacionais...',
-  'Consolidando o diagnóstico ECOS...'
+  'Analisando suas respostas...',
+  'Mapeando os pontos fortes e de atenção...',
+  'Organizando seu diagnóstico...'
 ];
 
 function mostrarLoading() {
@@ -634,73 +634,73 @@ function calcPct(dim) {
 const DIMS = [
   {
     id: 'D1',
-    nome: 'Vendas & Tração',
+    nome: 'Vendas e movimento',
     textos: {
       forte: {
-        diagnostico: 'A operação apresenta tração comercial ativa e validação de mercado.',
-        ecos: 'O foco da consultoria ECOS nesta fase é a consolidação de processos para transformar a receita em um fluxo previsível e independente de esforços esporádicos.'
+        diagnostico: 'Seu trabalho já tem validação e os clientes chegam. O movimento existe.',
+        ecos: 'Na consultoria ECOS, o foco aqui é criar consistência: organizar o processo para que suas vendas não dependam de sorte ou de momentos isolados de inspiração.'
       },
       medio: {
-        diagnostico: 'Existe demanda, porém com oscilação na frequência de fechamento de contratos.',
-        ecos: 'A ECOS atua no mapeamento das origens de conversão e na estruturação de um modelo contínuo de captação de clientes.'
+        diagnostico: 'Você vende, mas ainda sente instabilidade. A demanda existe, mas falta um caminho contínuo.',
+        ecos: 'A ECOS ajuda a mapear de onde vêm seus melhores clientes e estrutura um fluxo claro para repetir esses resultados sem sobressaltos.'
       },
       fraco: {
-        diagnostico: 'Fase inicial ou de baixa previsibilidade de entradas financeiras.',
-        ecos: 'A prioridade inicial do acompanhamento é a revisão da oferta e do modelo de atração comercial antes da expansão operacional.'
+        diagnostico: 'As vendas ainda acontecem raramente. Esse é o ponto que precisa de atenção prioritária.',
+        ecos: 'Começamos revisando seu posicionamento e a estrutura da sua oferta para entender exatamente o que está travando o início das vendas regulares.'
       }
     }
   },
   {
     id: 'D2',
-    nome: 'Comunicação & Posicionamento',
+    nome: 'Comunicação e clareza',
     textos: {
       forte: {
-        diagnostico: 'Mensagem de marca estruturada e reconhecida pelo público-alvo.',
-        ecos: 'A ECOS atua na otimização da mensagem nos pontos de contato estratégicos para aumentar a eficiência de conversão.'
+        diagnostico: 'Você sabe o valor do seu trabalho e consegue transmitir isso com clareza ao público.',
+        ecos: 'O trabalho da ECOS aqui é otimizar essa mensagem nos pontos certos de contato para transformar atração em fechamento com mais facilidade.'
       },
       medio: {
-        diagnostico: 'A proposta de valor é clara internamente, mas perde precisão na comunicação externa.',
-        ecos: 'Desenvolvimento de uma linha editorial orientada à conversão e alinhada à capacidade operacional da empresa.'
+        diagnostico: 'Você tem clareza da sua entrega, mas a comunicação com o público ainda é irregular.',
+        ecos: 'Definimos juntas uma linha de comunicação autêntica que reflita o nível do seu trabalho e que você consiga sustentar na prática.'
       },
       fraco: {
-        diagnostico: 'A comunicação atual não reflete a qualidade da entrega técnica do negócio.',
-        ecos: 'Ajuste de posicionamento como etapa prioritária para garantir alinhamento entre preço, percepção de valor e público comprador.'
+        diagnostico: 'Sua comunicação ainda não transmite o valor real do seu trabalho no mercado.',
+        ecos: 'Ajustar a forma como você se posiciona é o primeiro passo da ECOS. Antes de atrair mais pessoas, a mensagem precisa estar afiada.'
       }
     }
   },
   {
     id: 'D3',
-    nome: 'Atendimento & Processos',
+    nome: 'Atendimento e fluxo',
     textos: {
       forte: {
-        diagnostico: 'Fluxo comercial organizado com histórico de interações preservado.',
-        ecos: 'Ajuste fino de gargalos de atendimento e implementação de automações estratégicas.'
+        diagnostico: 'Você tem um fluxo de atendimento estruturado e acompanha quem chega até você.',
+        ecos: 'Focamos em simplificar e otimizar ainda mais seu processo comercial para aumentar a taxa de conversão sem tomar mais do seu tempo.'
       },
       medio: {
-        diagnostico: 'Atendimento funcional, porém dependente de condução individualizada e manual.',
-        ecos: 'Padronização dos processos de negociação para otimização de tempo e aumento da taxa de conversão.'
+        diagnostico: 'Você atende bem, mas faz isso no improviso a cada novo contato que recebe.',
+        ecos: 'A ECOS organiza scripts e caminhos de conversa padronizados para você conduzir orçamentos com segurança e fechar mais propostas.'
       },
       fraco: {
-        diagnostico: 'Ausência de processos formalizados de retenção e acompanhamento de oportunidades.',
-        ecos: 'Estruturação da base de contatos e criação de protocolos comerciais para evitar perda de oportunidades ativas.'
+        diagnostico: 'Seu processo de atendimento é informal e os contatos acabam se perdendo no caminho.',
+        ecos: 'Estruturamos um fluxo comercial básico e uma base própria de contatos, garantindo que nenhum potencial cliente fique sem acompanhamento.'
       }
     }
   },
   {
     id: 'D4',
-    nome: 'Gestão & Operação',
+    nome: 'Gestão e rotina',
     textos: {
       forte: {
-        diagnostico: 'Rotina com capacidade clara de absorção de novas diretrizes estratégicas.',
-        ecos: 'Implementação direta do plano de ação de 90 dias com foco em otimização de margens e escala.'
+        diagnostico: 'Sua rotina é organizada e você tem espaço claro para implementar melhorias.',
+        ecos: 'Com margem de execução, o plano de ação da ECOS avança rápido e com entregas de alto impacto no seu negócio.'
       },
       medio: {
-        diagnostico: 'Operação funcional, mas com margem de tempo limitada para novas implementações.',
-        ecos: 'Reorganização de prioridades operacionais para viabilizar a aplicação das estratégias sem sobrecarga.'
+        diagnostico: 'Sua gestão funciona, mas você sente que está sempre no limite da capacidade.',
+        ecos: 'Analisamos sua rotina para eliminar tarefas desnecessárias e abrir margem para você focar no que realmente faz a empresa crescer.'
       },
       fraco: {
-        diagnostico: 'Operação centralizada com baixa margem de tempo disponível para gestão.',
-        ecos: 'Plano de ação focado em intervenções pontuais e de alto impacto para liberação progressiva de capacidade operacional.'
+        diagnostico: 'A operação consome quase todo o seu tempo e sobra pouca margem para pensar estrategicamente.',
+        ecos: 'Trabalhamos em blocos pequenos e focados. O plano da ECOS é desenhado para reorganizar a casa sem gerar sobrecarga na sua rotina.'
       }
     }
   }
@@ -716,7 +716,7 @@ function mostrarResultado() {
   const pcts  = {};
   DIMS.forEach(d => { pcts[d.id] = calcPct(d.id); });
 
-  const niveisLabels = { forte: 'Consolidado', medio: 'Em Emissão', fraco: 'Ponto Crítico' };
+  const niveisLabels = { forte: 'Sólido', medio: 'Em desenvolvimento', fraco: 'Ponto de atenção' };
   const nivelClass   = { forte: 'nivel-forte', medio: 'nivel-medio', fraco: 'nivel-fraco' };
 
   const totalPct = Math.round(
@@ -725,14 +725,14 @@ function mostrarResultado() {
 
   let tituloFrase, introFrase;
   if (totalPct >= 65) {
-    tituloFrase = 'Estrutura operacional com maturidade e potencial de escala.';
-    introFrase = 'A empresa apresenta pilares consolidados. O próximo nível exige alinhamento fino entre capacidade comercial e processos internos para sustentar o crescimento.';
+    tituloFrase = 'Seu negócio tem uma base sólida, mas precisa de processos para fluir com mais leveza.';
+    introFrase = 'Você construiu algo real e o trabalho acontece. O diagnóstico abaixo mostra os pontos em que a operação ainda depende excessivamente do seu esforço individual.';
   } else if (totalPct >= 35) {
-    tituloFrase = 'Operação em fase de consolidação com gargalos pontuais.';
-    introFrase = 'O negócio possui tração ativa, porém enfrenta dispersão de energia em processos não padronizados. Ajustes de fluxo trarão estabilidade ao faturamento.';
+    tituloFrase = 'Seu negócio está em movimento, mas o improviso na rotina ainda pesa.';
+    introFrase = 'Você já tem entregas valiosas, mas algumas áreas funcionam sem processo. O mapa abaixo indica onde a sua energia está sendo gasta sem o retorno proporcional.';
   } else {
-    tituloFrase = 'Fase de reestruturação de bases operacionais e comerciais.';
-    introFrase = 'A prioridade do momento é o alinhamento de posicionamento e modelo de atração de clientes para garantir a viabilidade financeira do negócio.';
+    tituloFrase = 'Seu negócio está em fase de estruturar as primeiras bases de crescimento.';
+    introFrase = 'Você está construindo o seu espaço. O diagnóstico mostra o cenário atual e aponta onde precisamos colocar foco primeiro, sem pular etapas.';
   }
 
   const dimsHTML = DIMS.map(d => {
@@ -747,7 +747,7 @@ function mostrarResultado() {
         <div class="dim-body">
           <p class="dim-diagnostico">${conteudo.diagnostico}</p>
           <div class="dim-ecos">
-            <strong>Atuação Estratégica ECOS</strong>
+            <strong>Como a ECOS atua aqui</strong>
             ${conteudo.ecos}
           </div>
         </div>
@@ -755,15 +755,15 @@ function mostrarResultado() {
   }).join('');
 
   el.innerHTML = `
-    <span class="eyebrow-text">Resultado do Mapeamento</span>
+    <span class="eyebrow-text">Diagnóstico Concluído</span>
     <h2 class="result-titulo">${tituloFrase}</h2>
     <p class="result-intro">${introFrase}</p>
     <div class="dimensoes">${dimsHTML}</div>
     <div class="result-cta">
-      <p class="cta-titulo">Avaliação de Viabilidade de Acompanhamento</p>
-      <p class="cta-sub">Para verificar se o momento atual da sua empresa é compatível com a metodologia da Consultoria ECOS, conclua o envio das métricas operacionais no formulário oficial.</p>
-      <a href="https://tally.so/r/gDGEZl" target="_blank" class="cta-btn">Acessar Formulário de Qualificação</a>
-      <p class="cta-micro">Análise confidencial conduzida individualmente por Ariane Scheffer.</p>
+      <p class="cta-titulo">Próximo passo: Conversar sobre o seu momento</p>
+      <p class="cta-sub">Para avaliarmos se a Consultoria ECOS é o acompanhamento ideal para o seu negócio agora, preciso entender mais alguns detalhes sobre a sua rotina e momento financeiro.</p>
+      <a href="https://tally.so/r/gDGEZl" target="_blank" class="cta-btn">Preencher dados para conversa</a>
+      <p class="cta-micro">Leva menos de 2 minutos. Analiso suas respostas e entro em contato diretamente pelo WhatsApp.</p>
     </div>`;
 }
 </script>
